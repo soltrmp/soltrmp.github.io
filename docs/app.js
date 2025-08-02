@@ -166,17 +166,19 @@ document.addEventListener('DOMContentLoaded', function() {
       return values.map(v => v.replace(/^"(.*)"$/, '$1').trim());
   }
   
-  // Précharger les images
   function preloadImages() {
-      flashcards.forEach(card => {
-          if (card.questionImage) {
-              new Image().src = card.questionImage;
-          }
-          if (card.answerImage) {
-              new Image().src = card.answerImage;
-          }
-      });
-  }
+    flashcards.forEach(card => {
+        if (card.questionImage) {
+            const img = new Image();
+            img.src = card.questionImage;
+            // Précharger aussi la version miniature
+            new Image().src = card.questionImage;
+        }
+        if (card.answerImage) {
+            new Image().src = card.answerImage;
+        }
+    });
+}
   
   // Mettre à jour les compteurs
   function updateBoxCounters() {
@@ -233,37 +235,55 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
   
-  // Afficher la liste des cartes
-  function showCardsList(boxNumber) {
-      const boxCards = flashcards.filter(card => card.box === boxNumber);
-      cardsList.innerHTML = '';
-      
-      if (boxCards.length === 0) {
-          cardsList.innerHTML = '<p class="text-gray-500">Aucune carte</p>';
-      } else {
-          boxCards.forEach((card, index) => {
-              const cardElement = document.createElement('div');
-              cardElement.className = 'card-item';
-              
-              const displayText = card.question || (card.questionImage ? 'Image' : 'Carte sans texte');
-              cardElement.innerHTML = `
-                  <div>${displayText}</div>
-                  <div class="card-next-review">Rev.: ${formatTime(card.lastReview + reviewIntervals[card.box - 1] * 3600 * 1000)}</div>
-              `;
-              
-              cardElement.addEventListener('click', () => {
-                  currentBoxNumber = boxNumber;
-                  currentFlashcardIndex = flashcards.indexOf(boxCards[index]);
-                  showFlashcard();
-              });
-              cardsList.appendChild(cardElement);
-          });
-      }
-      
-      cardsListTitle.textContent = `Cartes de la boîte ${boxNumber}`;
-      cardsListContainer.classList.remove('hidden');
-  }
-  
+function showCardsList(boxNumber) {
+    const boxCards = flashcards.filter(card => card.box === boxNumber);
+    cardsList.innerHTML = '';
+    
+    if (boxCards.length === 0) {
+        cardsList.innerHTML = '<p class="text-gray-500">Aucune carte</p>';
+    } else {
+        boxCards.forEach((card, index) => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card-item flex items-start gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer';
+            
+            // Afficher la miniature si elle existe
+            let thumbnailHtml = '';
+            if (card.questionImage) {
+                thumbnailHtml = `
+                    <div class="thumbnail-container flex-shrink-0">
+                        <img src="${card.questionImage}" 
+                             alt="Miniature" 
+                             class="thumbnail-image w-12 h-12 object-cover rounded border border-gray-200">
+                    </div>
+                `;
+            }
+            
+            const displayText = card.question || (card.questionImage ? 'Carte avec image' : 'Carte sans texte');
+            cardElement.innerHTML = `
+                ${thumbnailHtml}
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-gray-900 truncate">${displayText}</div>
+                    <div class="card-next-review text-xs text-gray-500 mt-1">
+                        Rev.: ${formatTime(card.lastReview + reviewIntervals[card.box - 1] * 3600 * 1000)}
+                    </div>
+                </div>
+            `;
+            
+            cardElement.addEventListener('click', () => {
+                currentBoxNumber = boxNumber;
+                currentFlashcardIndex = flashcards.indexOf(boxCards[index]);
+                showFlashcard();
+            });
+            
+            cardsList.appendChild(cardElement);
+        });
+    }
+    
+    cardsListTitle.textContent = `Cartes de la boîte ${boxNumber}`;
+    cardsListContainer.classList.remove('hidden');
+}
+
+
   // Cacher la liste
   function hideCardsList() {
       cardsListContainer.classList.add('hidden');
