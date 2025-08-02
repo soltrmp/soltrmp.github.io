@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitner Box - Apprentissage par répétition espacée</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        box1: '#FF6B6B',
+                        box2: '#FFD166',
+                        box3: '#06D6A0',
+                        box4: '#118AB2',
+                        box5: '#073B4C',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="site-background text-gray-800">
+  <div class="container mx-auto max-w-6xl p-5">
+        <header class="text-center mb-5">
+            <h1 class="text-3xl font-bold text-gray-800">Leitner Box</h1>
+        </header>
+
+        <div class="flex flex-wrap justify-center gap-3 mb-5">
+            <select id="deck-selector" class="p-2 border rounded min-w-[250px]">
+                <option value="">Chargement des jeux...</option>
+            </select>
+            <button id="start-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" disabled>Commencer</button>
+            <button id="reset-btn" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Réinitialiser</button>
+        </div>
+
+        <div class="mb-6 rounded-lg shadow-md overflow-hidden max-w-3xl mx-auto">
+            <button class="accordion-btn w-full p-4 text-left bg-gray-600 text-white font-bold text-lg hover:bg-gray-700">
+                Mode d'emploi ▼
+            </button>
+            <div class="accordion-content bg-white overflow-hidden transition-all duration-300 max-h-0">
+                <div class="p-5">
+                    <h3 class="font-bold text-lg mb-3">Comment utiliser le système Leitner :</h3>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li><strong class="text-box1">Boîte 1</strong> : Cartes à réviser toutes les heures</li>
+                        <li><strong class="text-box2">Boîte 2</strong> : Cartes à réviser toutes les 3 heures</li>
+                        <li><strong class="text-box3">Boîte 3</strong> : Cartes à réviser toutes les 9 heures</li>
+                        <li><strong class="text-box4">Boîte 4</strong> : Cartes à réviser toutes les 27 heures</li>
+                        <li><strong class="text-box5">Boîte 5</strong> : Cartes maîtrisées (révision toutes les 81 heures)</li>
+                    </ol>
+                    <p class="mt-3">Sélectionnez un jeu de flashcards dans la liste déroulante et cliquez sur "Commencer". Cliquez sur une boîte pour voir ses cartes. Sélectionnez une carte à réviser.</p>
+                    <p>Après avoir vu la réponse, indiquez si vous connaissiez la réponse ou non.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+            <div class="box box-border-1 bg-white rounded-lg shadow-md p-4 text-center cursor-pointer hover:-translate-y-1 transition-transform" data-box-number="1">
+                <h2 class="text-xl font-bold mb-2 text-box1">Boîte 1</h2>
+                <div class="box-counter text-sm text-gray-600">0 carte(s)</div>
+                <div class="box-next-review text-xs text-gray-400 mt-1"></div>
+            </div>
+            <div class="box box-border-2 bg-white rounded-lg shadow-md p-4 text-center cursor-pointer hover:-translate-y-1 transition-transform" data-box-number="2">
+                <h2 class="text-xl font-bold mb-2 text-box2">Boîte 2</h2>
+                <div class="box-counter text-sm text-gray-600">0 carte(s)</div>
+                <div class="box-next-review text-xs text-gray-400 mt-1"></div>
+            </div>
+            <div class="box box-border-3 bg-white rounded-lg shadow-md p-4 text-center cursor-pointer hover:-translate-y-1 transition-transform" data-box-number="3">
+                <h2 class="text-xl font-bold mb-2 text-box3">Boîte 3</h2>
+                <div class="box-counter text-sm text-gray-600">0 carte(s)</div>
+                <div class="box-next-review text-xs text-gray-400 mt-1"></div>
+            </div>
+            <div class="box box-border-4 bg-white rounded-lg shadow-md p-4 text-center cursor-pointer hover:-translate-y-1 transition-transform" data-box-number="4">
+                <h2 class="text-xl font-bold mb-2 text-box4">Boîte 4</h2>
+                <div class="box-counter text-sm text-gray-600">0 carte(s)</div>
+                <div class="box-next-review text-xs text-gray-400 mt-1"></div>
+            </div>
+            <div class="box box-border-5 bg-white rounded-lg shadow-md p-4 text-center cursor-pointer hover:-translate-y-1 transition-transform" data-box-number="5">
+                <h2 class="text-xl font-bold mb-2 text-box5">Boîte 5</h2>
+                <div class="box-counter text-sm text-gray-600">0 carte(s)</div>
+                <div class="box-next-review text-xs text-gray-400 mt-1"></div>
+            </div>
+        </div>
+
+        <div id="cards-list-container" class="hidden bg-white rounded-lg shadow-md p-5 mb-6">
+            <h3 id="cards-list-title" class="text-xl font-bold mb-4">Cartes de la boîte 1</h3>
+            <div id="cards-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+        </div>
+
+        <div id="flashcard-container" class="hidden fixed inset-0 flex items-center justify-center p-5 z-50">
+            <div class="flashcard bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="question-section bg-gray-50 rounded-lg p-4 mb-5">
+                    <h3 class="font-bold text-lg mb-3">Question</h3>
+                    <div id="question-content" class="text-lg my-4"></div>
+                    <div id="last-reviewed" class="text-sm text-gray-500 italic"></div>
+                </div>
+                <button id="show-answer-btn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 mb-5">
+                    Voir la réponse
+                </button>
+                <div id="answer-section" class="hidden bg-gray-100 rounded-lg p-4 mt-5">
+                    <h3 class="font-bold text-lg mb-3">Réponse</h3>
+                    <div id="answer-content" class="text-lg my-4"></div>
+                    <div class="flex flex-wrap gap-3 mt-6">
+                        <button id="wrong-answer" class="flex-1 bg-red-500 text-white py-2 rounded-lg font-bold hover:bg-red-600">
+                            Faux
+                        </button>
+                        <button id="right-answer" class="flex-1 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600">
+                            Vrai
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

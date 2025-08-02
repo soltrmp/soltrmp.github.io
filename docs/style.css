@@ -1,0 +1,105 @@
+/* Custom styles to complement Tailwind */
+.site-background {
+    background-color: #f0f7ff;
+    background-image: url('trompette_bg.jpg');
+    background-size: cover; /* Modifié pour couvrir tout l'écran */
+    background-position: center; /* Centrer l'image */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh; /* Prendre toute la hauteur de l'écran */
+    margin: 0;
+    padding: 0;
+}
+.flashcard-container {
+    transition: opacity 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.accordion-content.active {
+    max-height: 500px;
+}
+
+.question-content img,
+.answer-content img {
+    max-width: 100%;
+    max-height: 300px;
+    display: block;
+    margin: 10px auto;
+    border-radius: 5px;
+    object-fit: contain;
+}
+
+.card-item {
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-left: 4px solid #6c757d;
+    position: relative;
+}
+
+.card-item:hover {
+    background-color: #e9ecef;
+}
+
+.card-next-review {
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+.empty-box {
+    color: #6c757d;
+    font-style: italic;
+    padding: 10px;
+}
+
+.box-border-1 { border-top: 5px solid #FF6B6B; }
+.box-border-2 { border-top: 5px solid #FFD166; }
+.box-border-3 { border-top: 5px solid #06D6A0; }
+.box-border-4 { border-top: 5px solid #118AB2; }
+.box-border-5 { border-top: 5px solid #073B4C; }
+
+.small-image {
+    max-width: none !important;
+    max-height: none !important;
+    width: auto;
+    height: auto;
+}
+
+.image-error {
+    background-color: #f0f0f0;
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+
+/* Ajout pour le feedback lors du clic sur les boutons */
+#wrong-answer:active, #right-answer:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
+}
+
+/* Animation de fermeture du popup */
+.flashcard-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.flashcard-container {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
