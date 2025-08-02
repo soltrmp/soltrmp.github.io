@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     deckSelector.appendChild(defaultOption);
 
     // Récupérer les autres fichiers CSV dynamiquement depuis GitHub
-    fetch('https://api.github.com/repos/soltrmp/soltrmp.github.io/contents')
+    fetch('https://api.github.com/repos/soltrmp/soltrmp.github.io/contents/docs')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Erreur réseau');
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             csvFiles.forEach(file => {
                 const option = document.createElement('option');
-                option.value = `docs/${file.name}`; // Chemin relatif depuis la racine
+                option.value = `${file.name}`; // Chemin relatif depuis la racine
                 option.textContent = file.name.replace('.csv', '');
                 deckSelector.appendChild(option);
             });
