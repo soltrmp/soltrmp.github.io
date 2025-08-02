@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
       deckSelector.appendChild(defaultOption);
 
       // Récupérer les autres fichiers CSV dynamiquement
-      fetch('https://api.github.com/repos/soltrmp/soltrmp.github.io/contents/')
+      fetch('https://api.github.com/repos/soltrmp/soltrmp.github.io/docs/contents/')
           .then(response => response.json())
           .then(files => {
               const csvFiles = files.filter(file => 
