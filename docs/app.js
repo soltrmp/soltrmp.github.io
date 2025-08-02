@@ -40,42 +40,54 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // Charger la liste des fichiers CSV disponibles
   function loadCSVFiles() {
-      // Fichier par défaut
-      const defaultOption = document.createElement('option');
-      defaultOption.value = 'flashcards.csv';
-      defaultOption.textContent = 'Flashcards par défaut';
-      deckSelector.appendChild(defaultOption);
+    // Fichier par défaut
+    const defaultOption = document.createElement('option');
+    defaultOption.value = 'flashcards.csv';
+    defaultOption.textContent = 'Flashcards par défaut';
+    deckSelector.appendChild(defaultOption);
 
-      // Récupérer les autres fichiers CSV dynamiquement
-      fetch('https://api.github.com/repos/soltrmp/soltrmp.github.io/contents/docs')
-          .then(response => response.json())
-          .then(files => {
-              const csvFiles = files.filter(file => 
-                  file.name.endsWith('.csv') && 
-                  file.name !== 'flashcards.csv'
-              );
-              
-              csvFiles.forEach(file => {
-                  const option = document.createElement('option');
-                  option.value = file.name;
-                  option.textContent = file.name.replace('.csv', '');
-                  deckSelector.appendChild(option);
-              });
+    // Récupérer les autres fichiers CSV dynamiquement depuis GitHub
+    fetch('https://api.github.com/repos/soltrmp/soltrmp.github.io/contents')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur réseau');
+            }
+            return response.json();
+        })
+        .then(files => {
+            const csvFiles = files.filter(file => 
+                file.name.endsWith('.csv') && 
+                file.name !== 'flashcards.csv' &&
+                file.type === 'file'
+            );
+            
+            if (csvFiles.length === 0) {
+                deckSelector.firstChild.textContent = 'Aucun fichier CSV trouvé';
+                return;
+            }
+            
+            csvFiles.forEach(file => {
+                const option = document.createElement('option');
+                option.value = `docs/${file.name}`; // Chemin relatif depuis la racine
+                option.textContent = file.name.replace('.csv', '');
+                deckSelector.appendChild(option);
+            });
 
-              startBtn.disabled = false;
-              deckSelector.firstChild.textContent = 'Sélectionnez un jeu';
-          })
-          .catch(error => {
-              console.error('Erreur de chargement des fichiers CSV:', error);
-              deckSelector.firstChild.textContent = 'Erreur de chargement - Utilisez flashcards.csv';
-              startBtn.disabled = false;
-          });
-  }
+            startBtn.disabled = false;
+            deckSelector.firstChild.textContent = 'Sélectionnez un jeu';
+        })
+        .catch(error => {
+            console.error('Erreur de chargement des fichiers CSV:', error);
+            deckSelector.firstChild.textContent = 'Erreur de chargement - Utilisez flashcards.csv';
+            startBtn.disabled = false;
+        });
+}
   
   // Charger les flashcards
   function loadFlashcards(deckFile) {
+    // Ajoutez cette ligne pour debugger
+    console.log('Chargement du fichier:', deckFile);
       fetch(deckFile)
           .then(response => response.text())
           .then(data => {
