@@ -127,31 +127,3 @@
     transition: background-color 0.2s;
     border-left: 3px solid #6c757d;
 }
-
-/* Améliorations pour le scroll sur mobile */
-html {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-}
-
-#cards-list-container {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    will-change: transform;
-}
-
-/* Correction pour iOS */
-@supports (-webkit-touch-callout: none) {
-    body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
-    
-    .container {
-        height: 100%;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-}
