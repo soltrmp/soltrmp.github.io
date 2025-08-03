@@ -281,7 +281,37 @@ function showCardsList(boxNumber) {
     
     cardsListTitle.textContent = `Cartes de la boîte ${boxNumber}`;
     cardsListContainer.classList.remove('hidden');
+
+    // Forcer un recalcul du layout
+    void cardsListContainer.offsetHeight;
 }
+
+function smoothScrollTo(element) {
+    // Solution cross-platform pour le scroll
+    const start = window.pageYOffset;
+    const target = element.getBoundingClientRect().top + start;
+    const duration = 300;
+    const startTime = performance.now();
+
+    function scrollStep(timestamp) {
+        const currentTime = timestamp - startTime;
+        const progress = Math.min(currentTime / duration, 1);
+        const easeProgress = easeOutQuad(progress);
+        window.scrollTo(0, start + (target * easeProgress));
+        
+        if (currentTime < duration) {
+            window.requestAnimationFrame(scrollStep);
+        }
+    }
+
+    function easeOutQuad(t) {
+        return t * (2 - t);
+    }
+
+    window.requestAnimationFrame(scrollStep);
+}
+
+
 
 
   // Cacher la liste
@@ -386,12 +416,31 @@ function showCardsList(boxNumber) {
           : 'Mode d\'emploi ▼';
   });
   
-  boxes.forEach(box => {
-      box.addEventListener('click', () => {
-          const boxNumber = parseInt(box.dataset.boxNumber);
-          showCardsList(boxNumber);
-      });
-  });
+boxes.forEach(box => {
+    box.addEventListener('click', () => {
+        const boxNumber = parseInt(box.dataset.boxNumber);
+        showCardsList(boxNumber);
+        
+        // Scroll amélioré
+        setTimeout(() => {
+            const container = document.getElementById('cards-list-container');
+            if (container) {
+                container.classList.remove('hidden');
+                
+                // Essayer d'abord la méthode native
+                if ('scrollBehavior' in document.documentElement.style) {
+                    container.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                } else {
+                    // Fallback pour iOS et anciens Android
+                    smoothScrollTo(container);
+                }
+            }
+        }, 50); // Petit délai pour permettre le rendu
+    });
+});
   
   showAnswerBtn.addEventListener('click', () => {
       answerSection.classList.remove('hidden');
