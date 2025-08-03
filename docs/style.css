@@ -127,3 +127,24 @@
     transition: background-color 0.2s;
     border-left: 3px solid #6c757d;
 }
+
+
+/* Correction spécifique pour Android */
+body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: auto !important;
+}
+
+#cards-list-container {
+    scroll-margin-top: 20px; /* Espace pour la barre d'adresse */
+}
+
+/* Optimisation du rendu */
+.box {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Empêcher le zoom sur le contenu */
+.flashcard {
+    touch-action: manipulation;
+}

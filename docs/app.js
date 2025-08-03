@@ -417,28 +417,33 @@ function smoothScrollTo(element) {
   });
   
 boxes.forEach(box => {
-    box.addEventListener('click', () => {
-        const boxNumber = parseInt(box.dataset.boxNumber);
+    box.addEventListener('click', function() {
+        const boxNumber = parseInt(this.dataset.boxNumber);
+        
+        // Afficher le contenu de la boîte
         showCardsList(boxNumber);
         
-        // Scroll amélioré
+        // Scroll vers le conteneur après un léger délai
         setTimeout(() => {
             const container = document.getElementById('cards-list-container');
             if (container) {
-                container.classList.remove('hidden');
-                
-                // Essayer d'abord la méthode native
-                if ('scrollBehavior' in document.documentElement.style) {
-                    container.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
+                // Solution spécifique pour Android
+                try {
+                    // Essayer le scroll natif d'abord
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } catch (e) {
+                    // Fallback pour les anciennes versions d'Android
+                    const yOffset = -20; // Ajustement pour la barre d'adresse
+                    const element = container;
+                    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    
+                    window.scrollTo({
+                        top: y,
+                        behavior: 'smooth'
                     });
-                } else {
-                    // Fallback pour iOS et anciens Android
-                    smoothScrollTo(container);
                 }
             }
-        }, 50); // Petit délai pour permettre le rendu
+        }, 100); // Délai un peu plus long pour Android
     });
 });
   
